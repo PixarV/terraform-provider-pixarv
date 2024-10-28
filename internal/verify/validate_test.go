@@ -177,8 +177,8 @@ func TestValidARN(t *testing.T) {
 		"arn",
 		"123456789012",
 		"arn:aws",
-		"arn:aws:logs",            //lintignore:AWSAT005
-		"arn:aws:logs:region:*:*", //lintignore:AWSAT005
+		"arn:aws:logs",            // lintignore:AWSAT005
+		"arn:aws:logs:region:*:*", // lintignore:AWSAT005
 	}
 	for _, v := range invalidNames {
 		_, errors := ValidARN(v, "arn")
@@ -572,6 +572,7 @@ func TestValidLaunchTemplateName(t *testing.T) {
 func TestValidLaunchTemplateID(t *testing.T) {
 	validIds := []string{
 		"lt-foobar123456",
+		"lt-FOOBAR123456",
 	}
 	for _, v := range validIds {
 		_, errors := ValidLaunchTemplateID(v, "id")
