@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
-	"github.com/hashicorp/terraform-provider-aws/internal/verify"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
 
@@ -266,11 +265,8 @@ func ResourceMetricAlarm() *schema.Resource {
 				ValidateFunc: validation.StringInSlice(lowSampleCountPercentiles_Values(), true),
 			},
 
-			"tags":     tftags.TagsSchema(),
-			"tags_all": tftags.TagsSchemaComputed(),
+			"tags": tftags.TagsSchema(),
 		},
-
-		CustomizeDiff: verify.SetTagsDiff,
 	}
 }
 
@@ -309,46 +305,14 @@ func resourceMetricAlarmCreate(d *schema.ResourceData, meta interface{}) error {
 	params := getPutMetricAlarmInput(d, meta)
 
 	log.Printf("[DEBUG] Creating CloudWatch Metric Alarm: %#v", params)
-	_, err = conn.PutMetricAlarm(&params)
 
-	// Some partitions (i.e., ISO) may not support tag-on-create
-	if params.Tags != nil && verify.CheckISOErrorTagsUnsupported(err) {
-		log.Printf("[WARN] failed creating CloudWatch Metric Alarm (%s) with tags: %s. Trying create without tags.", d.Get("alarm_name").(string), err)
-		params.Tags = nil
-
-		_, err = conn.PutMetricAlarm(&params)
-	}
-
-	if err != nil {
+	if _, err = conn.PutMetricAlarm(&params); err != nil {
 		return fmt.Errorf("failed creating CloudWatch Metric Alarm (%s): %w", d.Get("alarm_name").(string), err)
 	}
 
 	d.SetId(d.Get("alarm_name").(string))
+
 	log.Println("[INFO] CloudWatch Metric Alarm created")
-
-	defaultTagsConfig := meta.(*conns.AWSClient).DefaultTagsConfig
-	tags := defaultTagsConfig.MergeTags(tftags.New(d.Get("tags").(map[string]interface{})))
-
-	// Some partitions (i.e., ISO) may not support tag-on-create, attempt tag after create
-	if params.Tags == nil && len(tags) > 0 {
-		resp, err := FindMetricAlarmByName(conn, d.Id())
-
-		if err != nil {
-			return fmt.Errorf("while finding metric alarm (%s): %w", d.Id(), err)
-		}
-
-		err = UpdateTags(conn, aws.StringValue(resp.AlarmArn), nil, tags)
-
-		// If default tags only, log and continue. Otherwise, error.
-		if v, ok := d.GetOk("tags"); (!ok || len(v.(map[string]interface{})) == 0) && verify.CheckISOErrorTagsUnsupported(err) {
-			log.Printf("[WARN] failed adding tags after create for CloudWatch Metric Alarm (%s): %s", d.Id(), err)
-			return resourceMetricAlarmRead(d, meta)
-		}
-
-		if err != nil {
-			return fmt.Errorf("failed adding tags after create for CloudWatch Metric Alarm (%s): %w", d.Id(), err)
-		}
-	}
 
 	return resourceMetricAlarmRead(d, meta)
 }
@@ -461,18 +425,11 @@ func resourceMetricAlarmDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func getPutMetricAlarmInput(d *schema.ResourceData, meta interface{}) cloudwatch.PutMetricAlarmInput {
-	defaultTagsConfig := meta.(*conns.AWSClient).DefaultTagsConfig
-	tags := defaultTagsConfig.MergeTags(tftags.New(d.Get("tags").(map[string]interface{})))
-
 	params := cloudwatch.PutMetricAlarmInput{
 		AlarmName:          aws.String(d.Get("alarm_name").(string)),
 		ComparisonOperator: aws.String(d.Get("comparison_operator").(string)),
 		EvaluationPeriods:  aws.Int64(int64(d.Get("evaluation_periods").(int))),
 		TreatMissingData:   aws.String(d.Get("treat_missing_data").(string)),
-	}
-
-	if len(tags) > 0 {
-		params.Tags = Tags(tags.IgnoreAWS())
 	}
 
 	if v := d.Get("actions_enabled"); v != nil {

@@ -83,8 +83,6 @@ These attributes are currently unsupported:
         * `unit` - The unit for this metric.
     * `return_data` - Specify exactly one `metric_query` to be `true` to use that `metric_query` result as the alarm.
 * `tags` - A map of tags to assign to the resource. Always empty.
-* `tags_all` - A map of tags assigned to the resource, including those inherited from the provider [`default_tags` configuration block][default-tags].
-Always includes only tags inherited from the provider `default_tags` or empty if there is no `default_tags` specified.
 * `threshold_metric_id` - The threshold metric ID. Always `""`.
 
 ## Import
