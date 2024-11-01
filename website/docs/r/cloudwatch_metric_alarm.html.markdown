@@ -82,7 +82,6 @@ These attributes are currently unsupported:
         * `stat` - The statistic to apply to this metric.
         * `unit` - The unit for this metric.
     * `return_data` - Specify exactly one `metric_query` to be `true` to use that `metric_query` result as the alarm.
-* `tags` - A map of tags to assign to the resource. Always empty.
 * `threshold_metric_id` - The threshold metric ID. Always `""`.
 
 ## Import
