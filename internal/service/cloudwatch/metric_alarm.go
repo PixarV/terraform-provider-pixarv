@@ -299,7 +299,7 @@ func resourceMetricAlarmCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	params := getPutMetricAlarmInput(d, meta)
+	params := getPutMetricAlarmInput(d)
 
 	log.Printf("[DEBUG] Creating CloudWatch Metric Alarm: %#v", params)
 
@@ -390,7 +390,7 @@ func resourceMetricAlarmRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceMetricAlarmUpdate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*conns.AWSClient).CloudWatchConn
-	params := getPutMetricAlarmInput(d, meta)
+	params := getPutMetricAlarmInput(d)
 
 	log.Printf("[DEBUG] Updating CloudWatch Metric Alarm: %#v", params)
 	_, err := conn.PutMetricAlarm(&params)
@@ -421,7 +421,7 @@ func resourceMetricAlarmDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func getPutMetricAlarmInput(d *schema.ResourceData, meta interface{}) cloudwatch.PutMetricAlarmInput {
+func getPutMetricAlarmInput(d *schema.ResourceData) cloudwatch.PutMetricAlarmInput {
 	params := cloudwatch.PutMetricAlarmInput{
 		AlarmName:          aws.String(d.Get("alarm_name").(string)),
 		ComparisonOperator: aws.String(d.Get("comparison_operator").(string)),
