@@ -13,14 +13,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
-	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
-	"github.com/hashicorp/terraform-provider-aws/internal/verify"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
 
 func ResourceMetricAlarm() *schema.Resource {
-	//lintignore:R011
+	// lintignore:R011
 	return &schema.Resource{
 		Create:        resourceMetricAlarmCreate,
 		Read:          resourceMetricAlarmRead,
@@ -55,15 +53,17 @@ func ResourceMetricAlarm() *schema.Resource {
 				ValidateFunc: validation.IntAtLeast(1),
 			},
 			"metric_name": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"metric_query"},
-				ValidateFunc:  validation.StringLenBetween(1, 255),
+				Type:     schema.TypeString,
+				Required: true,
+				// Disabled due to metric_name is required and metric_query is unsupported.
+				// ConflictsWith: []string{"metric_query"},
+				ValidateFunc: validation.StringLenBetween(1, 255),
 			},
 			"metric_query": {
-				Type:          schema.TypeSet,
-				Optional:      true,
-				ConflictsWith: []string{"metric_name"},
+				Type:     schema.TypeSet,
+				Optional: true,
+				// Disabled due to metric_query is unsupported and metric_name is required.
+				// ConflictsWith: []string{"metric_name"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
@@ -142,39 +142,43 @@ func ResourceMetricAlarm() *schema.Resource {
 				},
 			},
 			"namespace": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"metric_query"},
+				Type:     schema.TypeString,
+				Required: true,
+				// Disabled due to namespace is required and metric_query is unsupported.
+				// ConflictsWith: []string{"metric_query"},
 				ValidateFunc: validation.All(
 					validation.StringLenBetween(1, 255),
-					validation.StringMatch(regexp.MustCompile(`[^:].*`), "must not contain colon characters"),
 				),
 			},
 			"period": {
-				Type:          schema.TypeInt,
-				Optional:      true,
-				ConflictsWith: []string{"metric_query"},
-				ValidateFunc: validation.Any(
-					validation.IntInSlice([]int{10, 30}),
+				Type:     schema.TypeInt,
+				Required: true,
+				// Disabled due to period is required and metric_query is unsupported.
+				// ConflictsWith: []string{"metric_query"},
+				ValidateFunc: validation.All(
 					validation.IntDivisibleBy(60),
+					validation.IntAtLeast(60),
 				),
 			},
 			"statistic": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"extended_statistic", "metric_query"},
-				ValidateFunc:  validation.StringInSlice(cloudwatch.Statistic_Values(), false),
+				Type:     schema.TypeString,
+				Required: true,
+				// Disabled due to statistic is required, extended_statistic and metric_query is unsupported.
+				// ConflictsWith: []string{"extended_statistic", "metric_query"},
+				ValidateFunc: validation.StringInSlice(cloudwatch.Statistic_Values(), false),
 			},
 			"threshold": {
-				Type:          schema.TypeFloat,
-				Optional:      true,
-				ConflictsWith: []string{"threshold_metric_id"},
+				Type:     schema.TypeFloat,
+				Required: true,
+				// Disabled due to threshold is required and threshold_metric_id is unsupported.
+				// ConflictsWith: []string{"threshold_metric_id"},
 			},
 			"threshold_metric_id": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"threshold"},
-				ValidateFunc:  validation.StringLenBetween(1, 255),
+				Type:     schema.TypeString,
+				Optional: true,
+				// Disabled due to threshold_metric_id is unsupported and threshold is required.
+				// ConflictsWith: []string{"threshold"},
+				ValidateFunc: validation.StringLenBetween(1, 255),
 			},
 			"actions_enabled": {
 				Type:     schema.TypeBool,
@@ -184,41 +188,38 @@ func ResourceMetricAlarm() *schema.Resource {
 			"alarm_actions": {
 				Type:     schema.TypeSet,
 				Optional: true,
+				MaxItems: 5,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.Any(
-						verify.ValidARN,
-						validEC2AutomateARN,
-					),
+					Type:         schema.TypeString,
+					ValidateFunc: validation.StringLenBetween(1, 1024),
 				},
 				Set: schema.HashString,
 			},
 			"alarm_description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 1024),
+				ValidateFunc: validation.StringLenBetween(1, 255),
 			},
 			"datapoints_to_alarm": {
 				Type:         schema.TypeInt,
+				Computed:     true,
 				Optional:     true,
 				ValidateFunc: validation.IntAtLeast(1),
 			},
 			"dimensions": {
-				Type:          schema.TypeMap,
-				Optional:      true,
-				ConflictsWith: []string{"metric_query"},
-				Elem:          &schema.Schema{Type: schema.TypeString},
+				Type:     schema.TypeMap,
+				Required: true,
+				// Disabled due to dimensions is required and metric_query is unsupported.
+				// ConflictsWith: []string{"metric_query"},
+				Elem: &schema.Schema{Type: schema.TypeString},
 			},
 			"insufficient_data_actions": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				MaxItems: 5,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.Any(
-						verify.ValidARN,
-						validEC2AutomateARN,
-					),
+					Type:         schema.TypeString,
+					ValidateFunc: validation.StringLenBetween(1, 1024),
 				},
 			},
 			"ok_actions": {
@@ -226,22 +227,24 @@ func ResourceMetricAlarm() *schema.Resource {
 				Optional: true,
 				MaxItems: 5,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.Any(
-						verify.ValidARN,
-						validEC2AutomateARN,
-					),
+					Type:         schema.TypeString,
+					ValidateFunc: validation.StringLenBetween(1, 1024),
 				},
 			},
 			"unit": {
 				Type:         schema.TypeString,
+				Computed:     true,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice(cloudwatch.StandardUnit_Values(), false),
 			},
 			"extended_statistic": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"statistic", "metric_query"},
+				Type:     schema.TypeString,
+				Optional: true,
+				ConflictsWith: []string{
+					// Disabled due to extended_statistic is unsupported and statistic is required.
+					// "statistic",
+					"metric_query",
+				},
 				ValidateFunc: validation.StringMatch(
 					// doesn't catch: PR with %-values provided, TM/WM/PR/TC/TS with no values provided
 					regexp.MustCompile(`^((p|(tm)|(wm)|(tc)|(ts))((\d{1,2}(\.\d{1,2})?)|(100))|(IQM)|(((TM)|(WM)|(PR)|(TC)|(TS)))\((\d+(\.\d+)?%?)?:(\d+(\.\d+)?%?)?\))$`),
@@ -260,12 +263,7 @@ func ResourceMetricAlarm() *schema.Resource {
 				Computed:     true,
 				ValidateFunc: validation.StringInSlice(lowSampleCountPercentiles_Values(), true),
 			},
-
-			"tags":     tftags.TagsSchema(),
-			"tags_all": tftags.TagsSchemaComputed(),
 		},
-
-		CustomizeDiff: verify.SetTagsDiff,
 	}
 }
 
@@ -301,57 +299,23 @@ func resourceMetricAlarmCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	params := getPutMetricAlarmInput(d, meta)
+	params := getPutMetricAlarmInput(d)
 
 	log.Printf("[DEBUG] Creating CloudWatch Metric Alarm: %#v", params)
-	_, err = conn.PutMetricAlarm(&params)
 
-	// Some partitions (i.e., ISO) may not support tag-on-create
-	if params.Tags != nil && verify.CheckISOErrorTagsUnsupported(err) {
-		log.Printf("[WARN] failed creating CloudWatch Metric Alarm (%s) with tags: %s. Trying create without tags.", d.Get("alarm_name").(string), err)
-		params.Tags = nil
-
-		_, err = conn.PutMetricAlarm(&params)
-	}
-
-	if err != nil {
+	if _, err = conn.PutMetricAlarm(&params); err != nil {
 		return fmt.Errorf("failed creating CloudWatch Metric Alarm (%s): %w", d.Get("alarm_name").(string), err)
 	}
 
 	d.SetId(d.Get("alarm_name").(string))
+
 	log.Println("[INFO] CloudWatch Metric Alarm created")
-
-	defaultTagsConfig := meta.(*conns.AWSClient).DefaultTagsConfig
-	tags := defaultTagsConfig.MergeTags(tftags.New(d.Get("tags").(map[string]interface{})))
-
-	// Some partitions (i.e., ISO) may not support tag-on-create, attempt tag after create
-	if params.Tags == nil && len(tags) > 0 {
-		resp, err := FindMetricAlarmByName(conn, d.Id())
-
-		if err != nil {
-			return fmt.Errorf("while finding metric alarm (%s): %w", d.Id(), err)
-		}
-
-		err = UpdateTags(conn, aws.StringValue(resp.AlarmArn), nil, tags)
-
-		// If default tags only, log and continue. Otherwise, error.
-		if v, ok := d.GetOk("tags"); (!ok || len(v.(map[string]interface{})) == 0) && verify.CheckISOErrorTagsUnsupported(err) {
-			log.Printf("[WARN] failed adding tags after create for CloudWatch Metric Alarm (%s): %s", d.Id(), err)
-			return resourceMetricAlarmRead(d, meta)
-		}
-
-		if err != nil {
-			return fmt.Errorf("failed adding tags after create for CloudWatch Metric Alarm (%s): %w", d.Id(), err)
-		}
-	}
 
 	return resourceMetricAlarmRead(d, meta)
 }
 
 func resourceMetricAlarmRead(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*conns.AWSClient).CloudWatchConn
-	defaultTagsConfig := meta.(*conns.AWSClient).DefaultTagsConfig
-	ignoreTagsConfig := meta.(*conns.AWSClient).IgnoreTagsConfig
 
 	resp, err := FindMetricAlarmByName(conn, d.Id())
 	if !d.IsNewResource() && tfresource.NotFound(err) {
@@ -421,35 +385,12 @@ func resourceMetricAlarmRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.Set("evaluate_low_sample_count_percentiles", resp.EvaluateLowSampleCountPercentile)
 
-	tags, err := ListTags(conn, arn)
-
-	if err != nil {
-		return fmt.Errorf("error listing tags for CloudWatch Metric Alarm (%s): %w", arn, err)
-	}
-
-	tags = tags.IgnoreAWS().IgnoreConfig(ignoreTagsConfig)
-
-	// Some partitions (i.e., ISO) may not support tagging, giving error
-	if verify.CheckISOErrorTagsUnsupported(err) {
-		log.Printf("[WARN] failed listing tags for CloudWatch Metric Alarm (%s): %s", d.Id(), err)
-		return nil
-	}
-
-	//lintignore:AWSR002
-	if err := d.Set("tags", tags.RemoveDefaultConfig(defaultTagsConfig).Map()); err != nil {
-		return fmt.Errorf("error setting tags: %w", err)
-	}
-
-	if err := d.Set("tags_all", tags.Map()); err != nil {
-		return fmt.Errorf("error setting tags_all: %w", err)
-	}
-
 	return nil
 }
 
 func resourceMetricAlarmUpdate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*conns.AWSClient).CloudWatchConn
-	params := getPutMetricAlarmInput(d, meta)
+	params := getPutMetricAlarmInput(d)
 
 	log.Printf("[DEBUG] Updating CloudWatch Metric Alarm: %#v", params)
 	_, err := conn.PutMetricAlarm(&params)
@@ -457,23 +398,6 @@ func resourceMetricAlarmUpdate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Updating metric alarm failed: %w", err)
 	}
 	log.Println("[INFO] CloudWatch Metric Alarm updated")
-
-	arn := d.Get("arn").(string)
-	if d.HasChange("tags_all") {
-		o, n := d.GetChange("tags_all")
-
-		err := UpdateTags(conn, arn, o, n)
-
-		// Some partitions (i.e., ISO) may not support tagging, giving error
-		if verify.CheckISOErrorTagsUnsupported(err) {
-			log.Printf("[WARN] failed updating tags for CloudWatch Metric Alarm (%s): %s", d.Id(), err)
-			return resourceMetricAlarmRead(d, meta)
-		}
-
-		if err != nil {
-			return fmt.Errorf("failed updating tags for CloudWatch Metric Alarm (%s): %w", d.Id(), err)
-		}
-	}
 
 	return resourceMetricAlarmRead(d, meta)
 }
@@ -497,19 +421,12 @@ func resourceMetricAlarmDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func getPutMetricAlarmInput(d *schema.ResourceData, meta interface{}) cloudwatch.PutMetricAlarmInput {
-	defaultTagsConfig := meta.(*conns.AWSClient).DefaultTagsConfig
-	tags := defaultTagsConfig.MergeTags(tftags.New(d.Get("tags").(map[string]interface{})))
-
+func getPutMetricAlarmInput(d *schema.ResourceData) cloudwatch.PutMetricAlarmInput {
 	params := cloudwatch.PutMetricAlarmInput{
 		AlarmName:          aws.String(d.Get("alarm_name").(string)),
 		ComparisonOperator: aws.String(d.Get("comparison_operator").(string)),
 		EvaluationPeriods:  aws.Int64(int64(d.Get("evaluation_periods").(int))),
 		TreatMissingData:   aws.String(d.Get("treat_missing_data").(string)),
-	}
-
-	if len(tags) > 0 {
-		params.Tags = Tags(tags.IgnoreAWS())
 	}
 
 	if v := d.Get("actions_enabled"); v != nil {
