@@ -124,6 +124,6 @@ provider "aws" {
 }
 ```
 
-## Rocki Cloud Provider Full Configuration
+## Rockit Cloud Provider Full Configuration
 
 For more information about the Rockit Cloud Provider configuration, see the documentation on [using Terraform][terraform].
