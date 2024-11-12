@@ -51,12 +51,12 @@ func TestAccPaaSServiceElasticSearch_basic(t *testing.T) {
 					testAccCheckServiceExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "arbitrator_required", "false"),
 					resource.TestCheckResourceAttr(resourceName, "auto_created_security_group_ids.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "backup_settings.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "backup_settings.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "data_volume.#", "1"),
 					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "data_volume.*", map[string]string{
 						"iops": "0",
 						"size": "32",
-						"type": "st2",
+						"type": "gp2",
 					}),
 					resource.TestCheckResourceAttr(resourceName, "delete_interfaces_on_destroy", "true"),
 					resource.TestCheckResourceAttr(resourceName, "elasticsearch.#", "1"),
@@ -74,7 +74,7 @@ func TestAccPaaSServiceElasticSearch_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "error_description", ""),
 					resource.TestCheckResourceAttr(resourceName, "high_availability", "false"),
 					resource.TestCheckResourceAttr(resourceName, "instances.#", "1"),
-					resource.TestCheckResourceAttrSet(resourceName, "instances.0.endpoint"),
+					resource.TestCheckResourceAttr(resourceName, "instances.0.endpoints.#", "1"),
 					resource.TestCheckResourceAttrSet(resourceName, "instances.0.index"),
 					resource.TestCheckResourceAttrSet(resourceName, "instances.0.instance_id"),
 					resource.TestCheckResourceAttrSet(resourceName, "instances.0.interface_id"),
@@ -88,7 +88,7 @@ func TestAccPaaSServiceElasticSearch_basic(t *testing.T) {
 					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "root_volume.*", map[string]string{
 						"iops": "0",
 						"size": "32",
-						"type": "st2",
+						"type": "gp2",
 					}),
 					resource.TestCheckResourceAttr(resourceName, "security_group_ids.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "service_class", "search"),
@@ -185,9 +185,13 @@ resource "aws_paas_service" "test" {
   name          = %[3]q 
   instance_type = "c5.large"
 
-  root_volume {}
+  root_volume {
+	type = "gp2"
+  }
 
-  data_volume {}
+  data_volume {
+    type = "gp2"
+  }
 
   delete_interfaces_on_destroy = true
   security_group_ids           = [aws_vpc.test.default_security_group_id]
