@@ -130,7 +130,19 @@ func ResourceService() *schema.Resource {
 			"endpoints": {
 				Type:     schema.TypeSet,
 				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"addresses": {
+							Type:     schema.TypeSet,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"name": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 			"error_code": {
 				Type:     schema.TypeString,
@@ -151,9 +163,21 @@ func ResourceService() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"endpoint": {
-							Type:     schema.TypeString,
+						"endpoints": {
+							Type:     schema.TypeSet,
 							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"address": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"name": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
 						},
 						"index": {
 							Type:     schema.TypeInt,
@@ -426,7 +450,7 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta inter
 	}
 	d.Set("data_volume", dataVolumeMap)
 
-	d.Set("endpoints", service.Endpoints)
+	d.Set("endpoints", flattenServiceEndpoints(service.Endpoints))
 
 	d.Set("error_code", service.ErrorCode)
 	d.Set("error_description", service.ErrorDescription)
@@ -699,6 +723,33 @@ func flattenBackupSettings(backupSettings *paas.BackupSettingsResponse) []map[st
 	return []map[string]interface{}{tfMap}
 }
 
+func flattenServiceEndpoints(endpoints []*paas.ServiceEndpoint) []map[string]interface{} {
+	if endpoints == nil {
+		return []map[string]interface{}{}
+	}
+
+	var tfList []map[string]interface{}
+	for _, endpoint := range endpoints {
+		if endpoint == nil {
+			continue
+		}
+
+		tfMap := map[string]interface{}{}
+
+		if v := endpoint.Name; v != nil {
+			tfMap["name"] = v
+		}
+
+		if v := endpoint.Addresses; v != nil {
+			tfMap["addresses"] = v
+		}
+
+		tfList = append(tfList, tfMap)
+	}
+
+	return tfList
+}
+
 func flattenInstances(instances []*paas.Instance) []map[string]interface{} {
 	if instances == nil {
 		return []map[string]interface{}{}
@@ -712,8 +763,8 @@ func flattenInstances(instances []*paas.Instance) []map[string]interface{} {
 
 		tfMap := map[string]interface{}{}
 
-		if v := instance.Endpoint; v != nil {
-			tfMap["endpoint"] = v
+		if v := instance.Endpoints; v != nil {
+			tfMap["endpoints"] = flattenInstanceEndpoints(v)
 		}
 
 		if v := instance.Index; v != nil {
@@ -742,6 +793,33 @@ func flattenInstances(instances []*paas.Instance) []map[string]interface{} {
 
 		if v := instance.Status; v != nil {
 			tfMap["status"] = v
+		}
+
+		tfList = append(tfList, tfMap)
+	}
+
+	return tfList
+}
+
+func flattenInstanceEndpoints(endpoints []*paas.InstanceEndpoint) []map[string]interface{} {
+	if endpoints == nil {
+		return []map[string]interface{}{}
+	}
+
+	var tfList []map[string]interface{}
+	for _, endpoint := range endpoints {
+		if endpoint == nil {
+			continue
+		}
+
+		tfMap := map[string]interface{}{}
+
+		if v := endpoint.Address; v != nil {
+			tfMap["address"] = v
+		}
+
+		if v := endpoint.Name; v != nil {
+			tfMap["name"] = v
 		}
 
 		tfList = append(tfList, tfMap)

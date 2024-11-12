@@ -35,7 +35,7 @@ In addition to all arguments above, the following attributes are exported:
 * `auto_created_security_group_ids` - List of security group IDs that cloud created for the service.
 * `backup_settings` - The backup settings for the service. The structure of this block is [described below](#backup_settings).
 * `data_volume` - The data volume parameters for the service. The structure of this block is [described below](#data_volume).
-* `endpoints` - List of endpoints for connecting to the service.
+* `endpoints` - List of endpoints for connecting to the service. The structure of this block is [described below](#endpoints).
 * `error_code` - The service error code.
 * `error_description` - The detailed description of the service error.
 * `high_availability` - Indicates whether this is a high-availability service.
@@ -82,11 +82,18 @@ The `data_volume` block has the following structure:
 * `size` - The size of the data volume in GiB.
 * `type` - The type of the data volume.
 
+### endpoints
+
+The `endpoints` block has the following structure:
+
+* `addresses` - List of addresses for connecting to the service.
+* `name` - The name of the endpoint.
+
 ### instances
 
 The `instances` block has the following structure:
 
-* `endpoint` - The service endpoint on the instance.
+* `endpoints` - List of service endpoints on the instance. The structure of this block is [described below](#instance-endpoints).
 * `index` - The instance index.
 * `instance_id` - The ID of the instance.
 * `interface_id` - The ID of the instance network interface.
@@ -94,6 +101,13 @@ The `instances` block has the following structure:
 * `private_ip` - The private IP address of the instance.
 * `role` - The instance role.
 * `status` - The current status of the instance.
+
+#### instance endpoints
+
+The `endpoints` block has the following structure:
+
+* `address` - The address of the endpoint.
+* `name` - The name of the endpoint.
 
 ### root_volume
 

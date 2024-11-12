@@ -895,7 +895,7 @@ The `monitoring` block has the following structure:
 In addition to all arguments above, the following attributes are exported:
 
 * `auto_created_security_group_ids` - List of security group IDs that the cloud created for the service.
-* `endpoints` - List of endpoints for connecting to the service.
+* `endpoints` - List of endpoints for connecting to the service. The structure of this block is [described below](#endpoints).
 * `error_code` - The service error code.
 * `error_description` - The detailed description of the service error.
 * `id` - The ID of the PaaS service.
@@ -920,9 +920,16 @@ For `*.user` the following attribute is also exported:
 
 * `id` - The ID of the user.
 
+### endpoints
+
+The `endpoints` block has the following structure:
+
+* `addresses` - List of addresses for connecting to the service.
+* `name` - The name of the endpoint.
+
 ### instances
 
-* `endpoint` - The service endpoint on the instance.
+* `endpoints` - List of service endpoints on the instance. The structure of this block is [described below](#instance-endpoints).
 * `index` - The instance index.
 * `instance_id` - The ID of the instance.
 * `interface_id` - The ID of the instance network interface.
@@ -930,6 +937,13 @@ For `*.user` the following attribute is also exported:
 * `private_ip` - The private IP address of the instance.
 * `role` - The instance role.
 * `status` - The current status of the instance.
+
+#### instance endpoints
+
+The `endpoints` block has the following structure:
+
+* `address` - The address of the endpoint.
+* `name` - The name of the endpoint.
 
 ## Timeouts
 
