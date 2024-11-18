@@ -13,6 +13,8 @@ description: |-
 
 # Rockit Cloud Provider
 
+TEST GPG KEY
+
 The Rockit Cloud Provider is based on the AWS Provider.
 Use it to interact with Rockit Cloud services.
 The provider needs to be configured with the proper credentials before you can use it.

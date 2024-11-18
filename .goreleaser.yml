@@ -15,15 +15,15 @@ builds:
     flags:
       - -trimpath
     goos:
-      - darwin
-      - freebsd
+      # - darwin
+      # - freebsd
       - linux
-      - windows
+      # - windows
     goarch:
-      - '386'
+      # - '386'
       - amd64
-      - arm
-      - arm64
+      # - arm
+      # - arm64
     ignore:
       - goarch: arm
         goos: windows
@@ -42,7 +42,7 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
 release:
   # if set to true, will not auto-publish the release
-  draft: true
+  draft: false
   extra_files:
     - glob: 'terraform-registry-manifest.json'
       name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
