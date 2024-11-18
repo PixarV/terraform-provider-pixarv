@@ -13,7 +13,7 @@ description: |-
 
 # Rockit Cloud Provider
 
-TEST GPG KEY
+FINISH TEST GPG KEY
 
 The Rockit Cloud Provider is based on the AWS Provider.
 Use it to interact with Rockit Cloud services.
