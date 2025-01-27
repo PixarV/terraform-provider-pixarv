@@ -13,6 +13,7 @@ description: |-
 [doc-pxc_strict_mode]: https://docs.percona.com/percona-xtradb-cluster/5.7/features/pxc-strict-mode.html
 [doc-transaction_isolation]: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation
 
+[elasticsearch-version]: https://docs.k2.cloud/en/api/paas/parameters/elasticsearch.html#version
 [paas]: https://docs.cloud.croc.ru/en/services/paas/index.html
 [technical support]: https://support.k2int.ru/app/#/project/CS
 [timeouts]: https://www.terraform.io/docs/configuration/blocks/resources/syntax.html#operation-timeouts
@@ -73,7 +74,7 @@ resource "aws_paas_service" "elasticsearch" {
   ssh_key_name = "<name>"
 
   elasticsearch {
-    version = "8.2.2"
+    version = "8.12"
     kibana  = true
   }
 }
@@ -496,6 +497,10 @@ The `root_volume` block has the following structure:
 In addition to the common arguments for all services [described above](#argument-reference),
 the `elasticsearch` block can contain the following arguments:
 
+* `allow_anonymous` - (Optional) Indicates whether anonymous access is enabled.
+  The parameter can be set only if `kibana` is `true` and `password` is specified.
+* `anonymous_role` - (Optional) The role for anonymous access. Valid values are `viewer`, `editor`.
+  The parameter can be set only if `allow_anonymous` is `true`.
 * `class` - (Optional) The service class. Valid value is `search`. Defaults to `search`.
 * `kibana` - (Optional) Indicates whether the Kibana deployment is enabled. Defaults to `false`.
 * `logging` - (Optional, Editable) The logging settings for the service. The structure of this block is [described below](#logging).
@@ -507,9 +512,9 @@ the `elasticsearch` block can contain the following arguments:
 If you need to use such a parameter, contact [technical support].
 
 * `password` - (Optional) The Elasticsearch user password.
-  The value must be 8 to 128 characters long and must not contain `-`, `!`, `:`, `;`, `%`, `'`, `"`, `` ` `` and `\`.
+  The value must not contain `-`, `!`, `:`, `;`, `%`, `'`, `"`, `` ` `` and `\`.
 * `version` - (Required) The version to install.
-  Valid values are `7.11.2`, `7.12.1`, `7.13.1`, `7.14.2`, `7.15.2`, `7.16.3`, `7.17.4`, `8.0.1`, `8.1.3`, `8.2.2`.
+  List of supported versions is available in the [user documentation][elasticsearch-version].
 
 ## Memcached Argument Reference
 
