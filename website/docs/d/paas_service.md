@@ -124,6 +124,8 @@ The `root_volume` block has the following structure:
 In addition to the common attributes for all services [described above](#attribute-reference),
 the following attributes are exported only for an Elasticsearch service:
 
+* `allow_anonymous` - Indicates whether anonymous access is enabled.
+* `anonymous_role` - The role for anonymous access.
 * `class` - The service class.
 * `kibana` - Indicates whether the Kibana deployment is enabled.
 * `logging` - The logging settings for the service. The structure of this block is [described below](#logging).
