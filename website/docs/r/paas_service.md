@@ -14,6 +14,7 @@ description: |-
 [doc-transaction_isolation]: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation
 
 [elasticsearch-version]: https://docs.k2.cloud/en/api/paas/parameters/elasticsearch.html#version
+[mysql-version]: https://docs.k2.cloud/en/api/paas/parameters/mysql.html#version
 [paas]: https://docs.cloud.croc.ru/en/services/paas/index.html
 [technical support]: https://support.k2int.ru/app/#/project/CS
 [timeouts]: https://www.terraform.io/docs/configuration/blocks/resources/syntax.html#operation-timeouts
@@ -197,7 +198,7 @@ resource "aws_paas_service" "mysql" {
 
   mysql {
     vendor  = "mariadb"
-    version = "10.7.7"
+    version = "10.11"
 
     user {
       name     = "user1"
@@ -619,18 +620,18 @@ This parameter is relevant for Percona 8.0, MySQL 8.0, and MariaDB 10.4, 10.5, 1
   when `innodb_buffer_pool_size` > 1 GiB. This parameter is relevant for Percona 5.7, 8.0 и MariaDB 10.2, 10.3, 10.4.
   Valid values are from 1 to 64.
 * `innodb_buffer_pool_size` - (Optional) The size in bytes of the buffer pool used to cache table data and indexes.
-  Valid values are from 5242880 (5 MiB) to 9223372036854775807.
+  Valid values are from 128 MiB.
 * `innodb_change_buffering` - (Optional) Operations for which change buffering optimization is enabled.
   Valid values are `inserts`, `deletes`, `changes`, `purges`, `all`, `none`.
 * `innodb_flush_log_at_trx_commit` - (Optional) The value of the parameter controls the behaviour for transaction commit operations.
   Valid values are from 0 to 2.
   For more information about the parameter, see the [MySQL documentation][doc-innodb_flush_log_at_trx_commit].
 * `innodb_io_capacity` - (Optional) The number of I/O operations per second (IOPS) available to InnoDB background tasks.
-  Valid values are from 100 to 9223372036854775807. Defaults to `200`.
+  Valid values are from 100 to 9223372036854775807.
 * `innodb_io_capacity_max` - (Optional) The maximum number of IOPS that InnoDB background tasks can perform.
   Valid values are from 100 to 9223372036854775807.
 * `innodb_log_file_size` - (Optional) The size of a single file in bytes in the redo system log
-  Valid values are from 4 MiB to 512 GiB.
+  Valid values are from 4 MiB to 4 GiB.
 * `innodb_log_files_in_group` - (Optional) The number of system log files in a log group.
   Valid values are from 2 to 100.
 * `innodb_purge_threads` - (Optional) The number of background threads allocated for the InnoDB purge operation.
@@ -647,9 +648,9 @@ This parameter is relevant for Percona 8.0, MySQL 8.0, and MariaDB 10.4, 10.5, 1
 * `max_connect_errors` - (Optional) The maximum number of connection errors, at which the server blocks the host from further connections.
   Valid values are from 1 to 9223372036854775807.
 * `max_connections` - (Optional) The maximum permitted number of simultaneous client connections that a host can handle.
-  Valid values are from 1 to 100000.
+  Valid values are from 10 to 100000.
 * `max_heap_table_size` - (Optional) The maximum size in bytes to which user-created `MEMORY` tables are permitted to grow.
-  Valid values are from 16384 (16 KiB) to 4294966272.
+  Valid values are from 16 KiB to 4 GiB.
 * `logging` - (Optional, Editable) The logging settings for the service. The structure of this block is [described below](#logging).
 * `monitoring` - (Optional, Editable) The monitoring settings for the service. The structure of this block is [described below](#monitoring).
 * `options` - (Optional) Map containing other MySQL parameters.
@@ -665,17 +666,15 @@ If you need to use such a parameter, contact [technical support].
 * `thread_cache_size` - (Optional) The number of threads that the server caches to establish new network connections.
   Valid values are from 0 to 16 KiB.
 * `tmp_table_size` - (Optional) The maximum size of internal in-memory temporary tables in bytes.
-  Valid values are from 1024 to 4294967295.
+  Valid values are from 1 KiB to 4 GiB.
 * `transaction_isolation` - (Optional) The transaction isolation level.
   For more information about the parameter, see the [MySQL documentation][doc-transaction_isolation].
   Valid values are `READ-UNCOMMITTED`, `READ-COMMITTED`, `REPEATABLE-READ`, `SERIALIZABLE`.
 * `user` - (Optional, Editable) List of MySQL users with parameters. The maximum number of users is 1000.
   The structure of this block is [described below](#mysql-user).
 * `vendor` - (Required) The engine vendor. Valid values are `mariadb`, `percona`, `mysql`.
-* `version` - (Required) The version to install. Valid values depend on `vendor`.
-  `mariadb`: `10.2.44`, `10.3.35`, `10.4.25`, `10.5.16`, `10.6.8`, `10.7.7`.
-  `percona`: `5.7.38`, `8.0.28`.
-  `mysql`: `5.7.41`, `8.0.32`.
+* `version` - (Required) The version to install.
+  List of supported versions is available in the [user documentation][mysql-version].
 * `wait_timeout` - (Optional) The number of seconds the server waits for activity on a noninteractive connection before closing it.
   Valid values are from 1 to 31536000.
 
