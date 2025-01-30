@@ -19,6 +19,7 @@ description: |-
 [mysql-version]: https://docs.k2.cloud/en/api/paas/parameters/mysql.html#version
 [paas]: https://docs.cloud.croc.ru/en/services/paas/index.html
 [pgsql-version]: https://docs.k2.cloud/en/api/paas/parameters/pgsql.html#version
+[rabbitmq-version]: https://docs.k2.cloud/en/api/paas/parameters/rabbitmq.html#version
 [technical support]: https://support.k2int.ru/app/#/project/CS
 [timeouts]: https://www.terraform.io/docs/configuration/blocks/resources/syntax.html#operation-timeouts
 
@@ -372,7 +373,7 @@ resource "aws_paas_service" "rabbitmq" {
   ssh_key_name = "<name>"
 
   rabbitmq {
-    version  = "3.8.30"
+    version  = "3.10"
     password = "********"
   }
 }
@@ -850,8 +851,9 @@ the `rabbitmq` block can contain the following arguments:
 If you need to use such a parameter, contact [technical support].
 
 * `password` - (Required, Editable) The RabbitMQ admin password.
-  The value must be 8 to 128 characters long and must not contain `'`, `"`, `` ` `` and `\`.
-* `version` - (Required) The version to install. Valid values are `3.8.30`, `3.9.16`, `3.10.0`.
+  The value must be 8 to 32 characters long and must not contain `-`, `|`, `[`, `]`, `'`, `"`, `;` and `\`.
+* `version` - (Required) The version to install.
+  List of supported versions is available in the [user documentation][rabbitmq-version].
 
 ## Redis Argument Reference
 
