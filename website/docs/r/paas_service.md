@@ -20,6 +20,7 @@ description: |-
 [paas]: https://docs.cloud.croc.ru/en/services/paas/index.html
 [pgsql-version]: https://docs.k2.cloud/en/api/paas/parameters/pgsql.html#version
 [rabbitmq-version]: https://docs.k2.cloud/en/api/paas/parameters/rabbitmq.html#version
+[redis-version]: https://docs.k2.cloud/en/api/paas/parameters/redis.html#version
 [technical support]: https://support.k2int.ru/app/#/project/CS
 [timeouts]: https://www.terraform.io/docs/configuration/blocks/resources/syntax.html#operation-timeouts
 
@@ -406,7 +407,7 @@ resource "aws_paas_service" "redis" {
 
   redis {
     class   = "database"
-    version = "5.0.14"
+    version = "7.2"
 
     password = "********"
 
@@ -874,16 +875,16 @@ the `redis` block can contain the following arguments:
 ~> **Note** If a parameter name includes a dot, it cannot be passed in `options`.
 If you need to use such a parameter, contact [technical support].
 
-* `password` - (Optional) The Redis user password.
-  The value must be 8 to 128 characters long and must not contain `'`, `"`, `` ` `` and `\`.
+* `password` - (Optional) The Redis user password. The value must not contain `'`, `"`, `` ` `` and `\`.
 * `persistence_aof` - (Optional, Editable) Indicates whether the AOF storage mode is enabled. Defaults to `false`.
-* `persistence_rdb` - (Optional, Editable) Indicates whether the RDB storage mode is enabled. Defaults to `false`.
+* `persistence_rdb` - (Optional, Editable) Indicates whether the RDB storage mode is enabled. Defaults to `true`.
 * `timeout` - (Optional, Editable) The time in seconds during which the connection to an inactive client is retained.
   Valid values are from 0 to 2147483647.
 * `tcp_backlog` - (Optional, Editable) The size of a connection queue. Valid values are from 1 to 4096.
 * `tcp_keepalive` - (Optional, Editable) The time in seconds during which the service sends ACKs to detect dead peers (unreachable clients).
   The value must be non-negative.
-* `version` - (Required) The version to install. Valid values are `5.0.14`, `6.2.6`, `7.0.11`.
+* `version` - (Required) The version to install.
+  List of supported versions is available in the [user documentation][redis-version].
 
 ## Common Service Argument Reference
 
