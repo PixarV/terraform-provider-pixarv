@@ -16,6 +16,7 @@ description: |-
 [doc-transaction_isolation]: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation
 
 [elasticsearch-version]: https://docs.k2.cloud/en/api/paas/parameters/elasticsearch.html#version
+[mongodb-version]: https://docs.k2.cloud/en/api/paas/parameters/mongodb.html#version
 [mysql-version]: https://docs.k2.cloud/en/api/paas/parameters/mysql.html#version
 [paas]: https://docs.cloud.croc.ru/en/services/paas/index.html
 [pgsql-version]: https://docs.k2.cloud/en/api/paas/parameters/pgsql.html#version
@@ -149,7 +150,7 @@ resource "aws_paas_service" "mongodb" {
   ssh_key_name = "<name>"
 
   mongodb {
-    version = "4.2.23"
+    version = "5.0"
 
     journal_commit_interval = 301
     maxconns                = 16
@@ -557,7 +558,8 @@ If you need to use such a parameter, contact [technical support].
 * `quiet` - (Optional, Editable) Indicates whether the quiet mode of _mongos_ or _mongod_ is enabled. Defaults to `false`.
 * `verbositylevel` - (Optional, Editable) The level of message detail in the message log.
   Valid values are `v`, `vv`, `vvv`, `vvvv`, `vvvvv`.
-* `version` - (Required) The version to install. Valid values are `3.6.23`, `4.0.28`, `4.2.23`, `4.4.17`, `5.0.13`.
+* `version` - (Required) The version to install.
+  List of supported versions is available in the [user documentation][mongodb-version].
 
 ### MongoDB database
 
