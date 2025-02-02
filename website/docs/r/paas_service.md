@@ -65,12 +65,12 @@ resource "aws_paas_service" "elasticsearch" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
   data_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
@@ -97,12 +97,12 @@ resource "aws_paas_service" "memcached" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
   data_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
@@ -134,12 +134,12 @@ resource "aws_paas_service" "mongodb" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
   data_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
@@ -187,12 +187,12 @@ resource "aws_paas_service" "mysql" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
   data_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
@@ -294,12 +294,12 @@ resource "aws_paas_service" "pgsql" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
   data_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
@@ -332,13 +332,18 @@ resource "aws_paas_service" "pgsql" {
       password = "********"
     }
 
+    user {
+      name     = "user2"
+      password = "********"
+    }
+
     database {
       name           = "test_db1"
       owner          = "user1"
       backup_enabled = true
       extensions     = ["bloom", "dict_int"]
       user {
-        name = "user1"
+        name = "user2"
       }
     }
 
@@ -359,7 +364,7 @@ resource "aws_paas_service" "rabbitmq" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
@@ -391,12 +396,12 @@ resource "aws_paas_service" "redis" {
   instance_type = "c5.large"
 
   root_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
   data_volume {
-    type = "st2"
+    type = "gp2"
     size = 32
   }
 
