@@ -617,14 +617,14 @@ If you need to use such a parameter, contact [technical support].
 * `gcs_fc_master_slave` - (Optional) A Galera parameter. Indicates whether the cluster has only one source node.
   The parameter can be set only if `high_availability` is `true`.
 
-~> **Note** `gcs_fc_master_slave` is deprecated. This parameter is relevant for Percona 5.7, MySQL 5.7, and MariaDB 10.2 and 10.3.
+~> **Note** `gcs_fc_master_slave` is deprecated. This parameter is relevant for Percona 5.7.
 Use `gcs_fc_single_primary` instead.
 
 * `gcs_fc_single_primary` - (Optional) A Galera parameter. Indicates whether there is more than one replication source.
   The parameter can be set only if `high_availability` is `true`.
 
 ~> **Note** `gcs_fc_single_primary` replaces the deprecated `gcs_fc_master_slave` parameter.
-This parameter is relevant for Percona 8.0, MySQL 8.0, and MariaDB 10.4, 10.5, 10.6 and 10.7.
+This parameter is relevant for Percona 8.0, MySQL 8.0, and MariaDB 10.4, 10.5, 10.6 and 10.11.
 
 * `innodb_buffer_pool_instances` - (Optional) The number of regions that `innodb_buffer_pool_size` is divided into
   when `innodb_buffer_pool_size` > 1 GiB. This parameter is relevant for Percona 5.7, 8.0 и MariaDB 10.2, 10.3, 10.4.
